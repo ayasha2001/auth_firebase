@@ -20,12 +20,9 @@ const AuthForm = () => {
     setPassword(event.target.value);
   };
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    setLoading(true);
-    if (isLogin) {
-    } else {
-      fetch(
+  const handleSignUp = async () => {
+    try {
+      const response = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDqZwDjnF43ZY2c_T6j07yTFfJsQ1_09Rc",
         {
           method: "POST",
@@ -38,23 +35,57 @@ const AuthForm = () => {
             "Content-Type": "application/json",
           },
         }
-      )
-        .then((response) => {
-          setLoading(false);
-          if (!response.ok) {
-            throw new Error("Authentication failed!");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // Handle successful registration
-          console.log("Registration successful:", data);
-        })
-        .catch((error) => {
-          // Handle errors
-          alert(error.message);
-          console.error("Registration error:", error.message);
-        });
+      );
+
+      if (!response.ok) {
+        alert("Registration failed");
+      }
+
+      const data = await response.json();
+      console.log("Registration successful:", data);
+      setEmail("");
+      setPassword("");
+      alert("Registration successful");
+    } catch (error) {
+      console.error("Registration error:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    const data = await fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDqZwDjnF43ZY2c_T6j07yTFfJsQ1_09Rc",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!data.ok) {
+      alert("Authentication failed!");
+    }
+    setLoading(false);
+    setEmail("");
+    setPassword("");
+    const json = await data.json();
+    alert("Login successful!")
+    console.log(json.idToken);
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    setLoading(true);
+    if (isLogin) {
+      handleLogin();
+    } else {
+      handleSignUp();
     }
   };
 
@@ -84,7 +115,7 @@ const AuthForm = () => {
         </div>
         <div className={classes.actions}>
           {isLoading ? (
-            <p style={{color:"white"}}>...Loading</p>
+            <p style={{ color: "white" }}>...Loading</p>
           ) : (
             <button>{isLogin ? "Login" : "Create Account"}</button>
           )}
