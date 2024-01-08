@@ -75,6 +75,7 @@ const AuthForm = () => {
     );
     if (!data.ok) {
       alert("Authentication failed!");
+      setLoading(false);
       return;
     }
     setLoading(false);
