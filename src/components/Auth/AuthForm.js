@@ -6,6 +6,7 @@ const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -21,7 +22,7 @@ const AuthForm = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log(isLogin);
+    setLoading(true);
     if (isLogin) {
     } else {
       fetch(
@@ -39,6 +40,7 @@ const AuthForm = () => {
         }
       )
         .then((response) => {
+          setLoading(false);
           if (!response.ok) {
             throw new Error("Authentication failed!");
           }
@@ -50,6 +52,7 @@ const AuthForm = () => {
         })
         .catch((error) => {
           // Handle errors
+          alert(error.message);
           console.error("Registration error:", error.message);
         });
     }
@@ -80,7 +83,12 @@ const AuthForm = () => {
           />
         </div>
         <div className={classes.actions}>
-          <button>{isLogin ? "Login" : "Create Account"}</button>
+          {isLoading ? (
+            <p style={{color:"white"}}>...Loading</p>
+          ) : (
+            <button>{isLogin ? "Login" : "Create Account"}</button>
+          )}
+
           <button
             type="button"
             className={classes.toggle}
