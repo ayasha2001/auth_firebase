@@ -1,11 +1,15 @@
-import { Link } from "react-router-dom";
-
+import { Link,useNavigate } from "react-router-dom";
 import classes from "./MainNavigation.module.css";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 
 const MainNavigation = () => {
   const cntxt = useContext(AuthContext);
+  const nav = useNavigate()
+  const handleClick = ()=>{
+    cntxt.logoutUser()
+    nav("/auth")
+  }
   return (
     <header className={classes.header}>
       <Link to="/">
@@ -19,7 +23,7 @@ const MainNavigation = () => {
                 <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <button onClick={cntxt.logoutUser}>Logout</button>
+                <button onClick={handleClick}>Logout</button>
               </li>
             </>
           ) : (

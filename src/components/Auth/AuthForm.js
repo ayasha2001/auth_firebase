@@ -1,13 +1,16 @@
 import { useState, useContext } from "react";
 import classes from "./AuthForm.module.css";
-import AuthContext from "../../context/AuthContext"
+import AuthContext from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const cntxt = useContext(AuthContext)
+
+  const cntxt = useContext(AuthContext);
+  const nav = useNavigate();
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -40,6 +43,7 @@ const AuthForm = () => {
 
       if (!response.ok) {
         alert("Registration failed");
+        return
       }
 
       const data = await response.json();
@@ -71,14 +75,15 @@ const AuthForm = () => {
     );
     if (!data.ok) {
       alert("Authentication failed!");
+      return;
     }
     setLoading(false);
     setEmail("");
     setPassword("");
     const json = await data.json();
-    cntxt.loginUser(json.idToken)
-    alert("Login successful!")
-    console.log(json.idToken);
+    cntxt.loginUser(json.idToken);
+    // alert("Login successful!");
+    nav("/");
   };
 
   const submitHandler = (event) => {
